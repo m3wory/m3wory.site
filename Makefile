@@ -39,10 +39,10 @@ deploy:
 		exit 1; \
 	fi
 	@echo "Деплой на $(HOST)..."
-	rsync -avz --exclude-from='.gitignore' --exclude='.git' ./ $(HOST):~/m3wory-space/
+	rsync -avz --exclude-from='.gitignore' --exclude='.git' ./ $(HOST):/var/www/m3wory-space/
 	@echo "Файлы скопированы! Теперь зайдите на сервер и выполните:"
 	@echo "ssh $(HOST)"
-	@echo "cd ~/m3wory-space"
+	@echo "cd /var/www/m3wory-space"
 	@echo "cp .env.example .env # и отредактируйте пароли"
 	@echo "make init-ssl # если первый запуск"
 	@echo "make prod # для запуска"

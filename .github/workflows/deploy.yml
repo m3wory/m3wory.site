@@ -19,8 +19,8 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # Переходим в папку с проектом (если её нет - скрипт упадет, это защита)
-            cd ~/m3wory-space || exit 1
+            # Переходим в папку с проектом
+            cd /var/www/m3wory-space || exit 1
             
             # Обновляем код из репозитория
             echo "Pulling latest changes..."
