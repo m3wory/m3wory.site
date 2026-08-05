@@ -1,0 +1,176 @@
+:root {
+  --primary-color: #f97316; /* Orange 500 */
+  --primary-hover: #ea580c; /* Orange 600 */
+  --bg-color: #ffffff; /* Solid White */
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b; /* Neutral Grey */
+  --border-color: #e2e8f0;
+  --radius: 12px;
+  --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: 'Montserrat', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 600px;
+}
+
+.card {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  background: white;
+}
+
+.btn.btn-primary {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 600;
+  color: white;
+  transition: background-color 0.2s ease;
+}
+
+.btn.btn-primary:hover,
+.btn.btn-primary:active,
+.btn.btn-primary:focus {
+  background-color: var(--primary-hover);
+  color: white;
+}
+
+.btn.btn-primary:disabled {
+  background-color: var(--text-muted);
+  opacity: 0.6;
+}
+
+#drop-zone {
+  position: relative;
+  border: 2px dashed var(--border-color);
+  background-color: #fafafa;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+#drop-zone.drag-over {
+  border-color: var(--primary-color);
+  background-color: #fffaf0;
+}
+
+#drop-zone:hover {
+  border-color: var(--text-muted);
+}
+
+.lucide {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2px;
+  vertical-align: middle;
+}
+
+.icon-lg {
+  width: 48px;
+  height: 48px;
+  color: var(--primary-color);
+}
+
+.badge-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+
+.meta-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+}
+
+.meta-pill .highlight {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+body .text-primary {
+  color: var(--primary-color);
+}
+
+.icon-accent {
+  color: var(--primary-color);
+}
+
+body .text-secondary {
+  color: var(--text-muted);
+}
+
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: var(--border-color);
+}
+
+.progress-bar {
+  background-color: var(--primary-color);
+}
+
+#file-selected {
+  display: none;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  background: white;
+  border-radius: var(--radius);
+}
+
+.success-indicator {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+#btn-copy {
+  min-width: 140px;
+}
+
+/* QR Code Section */
+#qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  margin-top: 1.5rem;
+}
+
+#qr-code {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+#qr-code img {
+  display: block;
+}

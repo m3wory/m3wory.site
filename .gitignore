@@ -1,0 +1,24 @@
+# Игнорируем папки с данными и виртуальными окружениями
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Docker и данные
+data/
+uploads/
+certbot/conf/
+certbot/www/
+
+# Секреты и локальные конфиги (ВАЖНО!)
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.cursor/
