@@ -1,30 +1,30 @@
 .PHONY: dev prod down logs clean db-shell cleanup cron-setup init-ssl deploy
 
 dev:
-	docker-compose -f docker-compose.dev.yml up -d --build
+	docker compose -f docker-compose.dev.yml up -d --build
 
 prod:
-	docker-compose -f docker-compose.yml up -d --build
+	docker compose -f docker-compose.yml up -d --build
 
 down:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 logs:
-	docker-compose logs -f
+	docker compose logs -f
 
 clean:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 	docker system prune -f
 
 db-shell:
-	docker-compose exec db psql -U fileshare -d fileshare
+	docker compose exec db psql -U fileshare -d fileshare
 
 cleanup:
-	docker-compose exec backend python -m app.services.cleanup
+	docker compose exec backend python -m app.services.cleanup
 
 cron-setup:
 	@crontab -l > mycron || true
-	@echo "0 * * * * cd $(shell pwd) && docker-compose exec -T backend python -m app.services.cleanup >> /var/log/m3wory-cleanup.log 2>&1" >> mycron
+	@echo "0 * * * * cd $(shell pwd) && docker compose exec -T backend python -m app.services.cleanup >> /var/log/m3wory-cleanup.log 2>&1" >> mycron
 	@crontab mycron
 	@rm mycron
 
