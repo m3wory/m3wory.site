@@ -22,6 +22,47 @@ body {
   max-width: 600px;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 0 2rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.brand-text {
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+.brand-tld {
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+@media (max-width: 480px) {
+  .brand-text {
+    font-size: 1.45rem;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+  }
+}
+
 .card {
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
