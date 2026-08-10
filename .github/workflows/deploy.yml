@@ -18,17 +18,23 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          script_stop: true
           script: |
-            # Переходим в папку с проектом
-            cd /var/www/m3wory-space || exit 1
-            
-            # Обновляем код из репозитория
+            set -e
+            cd /var/www/m3wory-space
+
+            echo "Remote / HEAD before pull:"
+            git remote -v
+            git log -1 --oneline
+
             echo "Pulling latest changes..."
-            git pull origin main
-            
-            # Перезапускаем контейнеры
+            git fetch origin main
+            git reset --hard origin/main
+
+            echo "HEAD after pull:"
+            git log -1 --oneline
+
             echo "Restarting containers..."
             make prod
-            
-            # Очищаем старые неиспользуемые образы Docker, чтобы не забить диск
+
             docker image prune -f
