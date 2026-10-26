@@ -1,36 +1,48 @@
 import asyncio
-from datetime import datetime, timezone
+import logging
+from datetime import datetime
 
-from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.core.config import UPLOAD_DIR
-from app.db.session import AsyncSessionLocal
-from app.models.file_record import FileRecord
+from app.core.config import get_settings
+from app.db.session import create_engine, create_session_factory
+from app.models.file_record import utcnow
+from app.repositories.file_repository import FileRepository
+from app.services.storage import LocalFileStorage
+
+logger = logging.getLogger("m3wory.cleanup")
 
 
-async def cleanup_expired_files() -> None:
+async def cleanup_files(
+    session_factory: async_sessionmaker[AsyncSession],
+    storage: LocalFileStorage,
+    now: datetime | None = None,
+) -> int:
+    """Delete expired or fully-downloaded files from disk and database.
+
+    Returns the number of removed records.
     """
-    Delete expired files from disk and database once.
-    """
+    async with session_factory() as session:
+        repository = FileRepository(session)
+        records = await repository.list_removable(now or utcnow())
+        for record in records:
+            storage.delete(record.stored_name)
+        await repository.delete_many(records)
+    return len(records)
+
+
+async def main() -> None:
+    settings = get_settings()
+    engine = create_engine(settings.database_url)
     try:
-        async with AsyncSessionLocal() as session:
-            now = datetime.now(timezone.utc)
-            result = await session.execute(
-                select(FileRecord).where(FileRecord.expires_at < now)
-            )
-            expired = result.scalars().all()
+        removed = await cleanup_files(
+            create_session_factory(engine), LocalFileStorage(settings.upload_dir)
+        )
+    finally:
+        await engine.dispose()
+    logger.info("Cleaned up %d files.", removed)
 
-            for rec in expired:
-                path = UPLOAD_DIR / rec.stored_name
-                if path.exists():
-                    path.unlink()
-                await session.delete(rec)
-
-            await session.commit()
-            print(f"[{datetime.now(timezone.utc).isoformat()}] Cleaned up {len(expired)} expired files.")
-    except Exception as e:
-        print(f"[{datetime.now(timezone.utc).isoformat()}] Error during cleanup: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(cleanup_expired_files())
-
+    logging.basicConfig(level=logging.INFO, format="[%(asctime)s] %(message)s")
+    asyncio.run(main())

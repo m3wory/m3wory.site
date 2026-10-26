@@ -1,14 +1,42 @@
-name: Deploy to Production
+name: CI/CD
 
 on:
   push:
     branches:
       - main
       - master
+  pull_request:
 
 jobs:
+  test:
+    name: Lint and test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Test
+        run: pytest
+
   deploy:
     name: Deploy to VPS
+    needs: test
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     steps:
@@ -19,9 +47,11 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: true
+          # Image builds on the VPS can be slow because of its network.
+          command_timeout: 30m
           script: |
             set -e
-            cd /var/www/m3wory-space
+            cd /var/www/m3wory.site
 
             echo "Remote / HEAD before pull:"
             git remote -v

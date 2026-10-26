@@ -1,19 +1,29 @@
-import os
+from functools import lru_cache
 from pathlib import Path
 
-from dotenv import load_dotenv
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+class Settings(BaseSettings):
+    """Application settings, read from environment variables (or a local .env file)."""
 
-# Storage
-UPLOAD_DIR = Path(os.getenv("UPLOAD_DIR", "/app/uploads"))
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-MAX_FILE_SIZE_MB: int = int(os.getenv("MAX_FILE_SIZE_MB", "100"))
+    database_url: str
+    upload_dir: Path = Path("/app/uploads")
+    max_file_size_mb: int = 100
 
-# Database
-DATABASE_URL_RAW = os.getenv("DATABASE_URL", "")
-DATABASE_URL = DATABASE_URL_RAW.replace("postgresql://", "postgresql+asyncpg://")
+    @field_validator("database_url")
+    @classmethod
+    def use_asyncpg_driver(cls, value: str) -> str:
+        return value.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+    @property
+    def max_file_size_bytes(self) -> int:
+        return self.max_file_size_mb * 1024 * 1024
+
+
+@lru_cache
+def get_settings() -> Settings:
+    return Settings()
