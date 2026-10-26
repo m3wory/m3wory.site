@@ -1,7 +1,22 @@
-.PHONY: dev prod down logs clean db-shell cleanup cron-setup init-ssl deploy
+.PHONY: dev prod down logs clean db-shell cleanup cron-setup init-ssl deploy test test-cov lint
 
 dev:
 	docker compose -f docker-compose.dev.yml up -d --build
+
+# Tests and lint run in a throwaway container (./backend is bind-mounted by the dev compose file).
+# Dev dependencies are installed on the fly, so the production image stays free of them.
+TEST_RUN = docker compose -f docker-compose.dev.yml run --rm --no-deps \
+	-e PYTHONDONTWRITEBYTECODE=1 -e PIP_ROOT_USER_ACTION=ignore -e PIP_DISABLE_PIP_VERSION_CHECK=1 \
+	backend sh -c
+
+test:
+	$(TEST_RUN) "pip install -q -r requirements-dev.txt && pytest -p no:cacheprovider"
+
+test-cov:
+	$(TEST_RUN) "pip install -q -r requirements-dev.txt && pytest -p no:cacheprovider --cov --cov-report=term-missing"
+
+lint:
+	$(TEST_RUN) "pip install -q -r requirements-dev.txt && ruff check --no-cache ."
 
 prod:
 	docker compose -f docker-compose.yml up -d --build
