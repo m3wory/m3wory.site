@@ -1,21 +1,28 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
+from sqlalchemy.orm import DeclarativeBase
 
-from app.core.config import DATABASE_URL
 
-engine = create_async_engine(DATABASE_URL, echo=False)
-AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 
-async def init_db() -> None:
-    """
-    Initialize database and create all tables.
-    Imported models are registered via Base metadata.
-    """
+def create_engine(database_url: str) -> AsyncEngine:
+    return create_async_engine(database_url, echo=False)
+
+
+def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
+    return async_sessionmaker(engine, expire_on_commit=False)
+
+
+async def init_db(engine: AsyncEngine) -> None:
+    """Create all tables registered on Base.metadata."""
+    # Import here so the model is registered on Base before create_all runs.
+    from app.models import file_record  # noqa: F401
+
     async with engine.begin() as conn:
-        # Import here to avoid circular imports
-        from app.models.file_record import FileRecord as _FileRecord  # noqa: F401
-
         await conn.run_sync(Base.metadata.create_all)
-
