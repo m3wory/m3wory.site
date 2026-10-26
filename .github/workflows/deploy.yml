@@ -21,7 +21,7 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd /var/www/m3wory-space
+            cd /var/www/m3wory.site
 
             echo "Remote / HEAD before pull:"
             git remote -v
