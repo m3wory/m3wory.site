@@ -22,3 +22,9 @@ certbot/www/
 .idea/
 *.swp
 .cursor/
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
